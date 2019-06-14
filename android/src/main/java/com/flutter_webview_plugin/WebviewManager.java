@@ -471,7 +471,10 @@ class WebviewManager {
     * Checks if going back on the Webview is possible.
     */
     boolean canGoBack() {
-        return webView.canGoBack();
+        if (webView != null) {
+            return webView.canGoBack();
+        }
+        return false;
     }
     /**
     * Checks if going forward on the Webview is possible.
