@@ -128,11 +128,23 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
 
     _enableZoom = [withZoom boolValue];
 
-    UIViewController* presentedViewController = self.viewController.presentedViewController;
-    UIViewController* currentViewController = presentedViewController != nil ? presentedViewController : self.viewController;
+    UIViewController* currentViewController = [self topViewControllerFor: self.viewController];
     [currentViewController.view addSubview:self.webview];
-
+    [currentViewController.view bringSubviewToFront:self.webview];
+    
     [self navigate:call];
+}
+
+- (UIViewController *)topViewControllerFor:(UIViewController *)viewController {
+    if ([viewController isKindOfClass:[UINavigationController class]]) {
+        UINavigationController *navigationController = (UINavigationController *)viewController;
+        UIViewController *lastViewController = [[navigationController viewControllers] lastObject];
+        return [self topViewControllerFor: lastViewController];
+    } else if (viewController.presentedViewController == nil) {
+        return viewController;
+    } else {
+        return [self topViewControllerFor:viewController.presentedViewController];
+    }
 }
 
 - (CGRect)parseRect:(NSDictionary *)rect {
